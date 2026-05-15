@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-cloudlfare';
+import adapter from '@sveltejs/adapter-cloudlflare';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
