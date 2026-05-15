@@ -2,6 +2,7 @@
 	import { getSQL } from '$lib/sqlite';
 	import { RowComponent } from 'tabulator-tables';
 	import Table from '../components/table.svelte';
+	import { onMount } from 'svelte';
 
 	let db;
 	let table = $state();
@@ -71,35 +72,41 @@
 	function updateConfig(db, param, value) {
 		db.run(`UPDATE config SET value = (?) WHERE param = (?)`, [value, param]);
 	}
+
+	onMount(() => {
+		loadTemplate('x32');
+	});
 </script>
 
-<button onclick={() => loadTemplate('x32')}> Load X32 Template </button>
-<button
-	onclick={() => {
-		const data = table.getData();
-		const filteredData = data.map((row) => ({
-			channel: row.channel,
-			name: row.name.replace('\r', '')
-		}));
-		console.log(filteredData);
-		insertArray(db, 'profiles', filteredData);
-		const channels = filteredData.map((row) => row.channel);
-		updateConfig(db, 'channels', channels.join());
-		console.log(query(db, 'SELECT * FROM profiles;'));
-		console.log(query(db, 'SELECT * FROM config;'));
-	}}
->
-	Insert CSV data
-</button>
-<button onclick={downloadDB}>Download DB</button>
 
-<Table
-	bind:table
-	data={[{ channel: '', name: '' }]}
-	columns={[
-		{ title: 'Channel', field: 'channel' }, //, editor:"number", editorParams:{min:1, max:32, step:1, verticalNavigation:"table"}, validator:"unique"},
-		{ title: 'Name', field: 'name' } //, editor:"input"}
-	]}
-/>
 
-<button onclick={() => console.log(table.getData())}>Print table data</button>
+<div class="flex flex-col items-center">
+	<div class="w-1/2 m-4">
+		<Table
+			bind:table
+			data={[{ channel: '', name: '' }]}
+			columns={[
+				{ title: 'Channel', field: 'channel' }, //, editor:"number", editorParams:{min:1, max:32, step:1, verticalNavigation:"table"}, validator:"unique"},
+				{ title: 'Name', field: 'name' } //, editor:"input"}
+			]}
+		/>
+	</div>
+	
+	<input type="button" value="Download DB" class="bg-slate-800 text-slate-50 p-4 rounded-md m-4 hover:cursor-pointer hover:bg-slate-700"
+		onclick={() => {
+			const data = table.getData();
+			const filteredData = data.map((row) => ({
+				channel: row.channel,
+				name: row.name.replace('\r', '')
+			}));
+			console.log(filteredData);
+			insertArray(db, 'profiles', filteredData);
+			const channels = filteredData.map((row) => row.channel);
+			updateConfig(db, 'channels', channels.join());
+			console.log(query(db, 'SELECT * FROM profiles;'));
+			console.log(query(db, 'SELECT * FROM config;'));
+			downloadDB();
+		}}>
+</div>
+
+<!-- <button onclick={() => console.log(table.getData())}>Print table data</button> -->

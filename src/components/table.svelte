@@ -10,6 +10,7 @@
 		table = new Tabulator(tableComponent, {
 			data: data, //link data to table
 			reactiveData: true,
+			layout: "fitColumns",
 			clipboard: true,
 			clipboardPasteAction:"replace", //enable data reactivity
 			columns: columns //define table columns
