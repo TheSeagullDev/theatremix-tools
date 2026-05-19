@@ -10,6 +10,7 @@
 	let channels = $state();
 	let cues;
 	let conflicts = $state();
+	let loading = $state(false);
 
 	let castList = $state();
 
@@ -127,6 +128,7 @@
 			}
 		}
 
+		loading = false;
 		downloadDB();
 		conflicts = findInCueChannelConflicts(db);
 		/* for(const [label, occurences] of Object.entries(labelMap)) {
@@ -212,14 +214,18 @@
 <button
 	class="m-4 rounded-md bg-slate-800 p-4 text-slate-50 hover:cursor-pointer hover:bg-slate-700"
 	onclick={() => {
+		loading = true;
 		analyzeCues(db, cues);
 	}}>Assign Cast</button
 >
 
+{#if loading}
+	<h1>Loading...</h1>
+{/if}
 
 {#if conflicts}
 	{#each conflicts as conflict}
-		<div class="bg-red-400 p-4 rounded-2xl m-4">
+		<div class="m-4 rounded-2xl bg-red-400 p-4">
 			<h1 class="text-xl">Conflict!</h1>
 			<p>Cue: {conflict.cue}, Channel: {conflict.channel}. Channel is in DCAs {conflict.dcas}</p>
 		</div>
