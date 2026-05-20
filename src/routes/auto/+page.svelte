@@ -10,6 +10,7 @@
 	let channels = $state();
 	let cues;
 	let conflicts = $state();
+	let explanation = $state();
 	let loading = $state(false);
 
 	let castList = $state();
@@ -128,9 +129,12 @@
 			}
 		}
 
+		updateProfileNames(db, data.micList)
+
 		loading = false;
 		downloadDB();
 		conflicts = findInCueChannelConflicts(db);
+		explanation = data.explanation;
 		/* for(const [label, occurences] of Object.entries(labelMap)) {
 			console.log(`Current DCA: ${label}`);
 			let userChannels = prompt(`Insert Channel or comma separated channels for Label: ${label}`);
@@ -188,6 +192,20 @@
 
 		return conflicts;
 	}
+
+	function updateProfileNames(db, micList) {
+		const stmt = db.prepare(`
+		UPDATE profiles
+		SET name = ?
+		WHERE channel = ?
+	`);
+
+		for (const mic of micList) {
+			stmt.run([mic.name, mic.micNumber]);
+		}
+
+		stmt.free();
+	}
 </script>
 
 <h1>Upload TheatreMix DB</h1>
@@ -230,4 +248,8 @@
 			<p>Cue: {conflict.cue}, Channel: {conflict.channel}. Channel is in DCAs {conflict.dcas}</p>
 		</div>
 	{/each}
+{/if}
+{#if explanation}
+	<h2>Notes:</h2>
+	<p>{explanation}</p>
 {/if}

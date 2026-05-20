@@ -17,6 +17,10 @@ export async function POST({ request }) {
     the label or group is unclear or likely to vary between scenes, do not assign
     any microphones to it. Certain labels may be abbreviated for space.
 
+	You must also output a list of microphone numbers and a corresponding label for that microphone that is 12 characters or less in length. The label should accurately represent the role of the microphone. Focus on clarity, understanding and brevity. DO NOT exceed 12 characters in length.
+
+	Also output an explanation of your overall reasoning while labeling, areas where you were confused, and where the audio engineer should focus on double-checking the programming. As a part of this explanation, be sure to address all labels that you were unclear on.
+
     Rules:
 
     A DCA label may represent: a single character a group of characters ensemble
@@ -53,12 +57,33 @@ export async function POST({ request }) {
 						}
 					},
 					propertyOrdering: ['label', 'channels', 'reasoning'],
-					required: ['label', 'channels']
+					required: ['label', 'channels', 'reasoning']
 				}
+			},
+
+			micList: {
+				type: 'array',
+				items: {
+					type: 'object',
+					properties: {
+						micNumber: {
+							type: 'number'
+						},
+						name: {
+							type: 'string'
+						}
+					},
+					required: ['micNumber', 'name']
+				}
+			},
+
+			explanation: {
+				type: 'string'
 			}
 		},
-		propertyOrdering: ['channelLabels'],
-		required: ['channelLabels']
+
+		propertyOrdering: ['channelLabels', 'micList', 'explanation'],
+		required: ['channelLabels', 'micList', 'explanation']
 	};
 
 	const ai = new GoogleGenAI({
@@ -73,7 +98,7 @@ export async function POST({ request }) {
 			responseSchema: callSchema
 		}
 	});
-    console.log("RAW:", response.text)
+	console.log('RAW:', response.text);
 
 	const clean = response.text
 		.replace(/```json/g, '')
