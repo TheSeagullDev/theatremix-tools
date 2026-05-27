@@ -15,7 +15,7 @@ export async function POST({ request }) {
     Your task is to assign the proper microphone channel number or numbers to each
     label, determining if the label corresponds to an individual actor or group. If
     the label or group is unclear or likely to vary between scenes, do not assign
-    any microphones to it. Certain labels may be abbreviated for space.
+    any microphones to it. Certain labels may be abbreviated for space. Do not assign any labels corresponding to the entire cast, such as "All" or "Ensemble" or similar.
 
 	You must also output a list of microphone numbers and a corresponding label for that microphone that is 12 characters or less in length. The label should accurately represent the role of the microphone. Focus on clarity, understanding and brevity. DO NOT exceed 12 characters in length.
 
